@@ -1,0 +1,25 @@
+name: shadow-map
+services:
+  postgres:
+    image: shadow-map-postgis-pgrouting:17-3.5-3.8
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_DB: shadow_map
+      POSTGRES_USER: shadow_admin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Create backend/.env first}
+      POSTGRES_INITDB_ARGS: --encoding=UTF8 --locale=C.UTF-8 --auth-host=scram-sha-256
+    ports:
+      - "127.0.0.1:55433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shadow_admin -d shadow_map"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+    shm_size: 256mb
+volumes:
+  postgres-data:

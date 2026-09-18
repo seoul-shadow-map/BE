@@ -1,0 +1,35 @@
+server:
+  address: ${API_HOST:127.0.0.1}
+  port: ${API_PORT:8080}
+  error:
+    include-message: never
+    include-stacktrace: never
+spring:
+  application:
+    name: shade-api
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:127.0.0.1}:${DB_PORT:55433}/${DB_NAME:shadow_map}
+    username: shadow_api
+    password: ${API_DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 6
+      connection-timeout: 5000
+      connection-init-sql: SET statement_timeout = '5s'
+  flyway:
+    url: ${spring.datasource.url}
+    user: shadow_migrator
+    password: ${MIGRATION_DB_PASSWORD}
+    default-schema: shade_api
+    schemas: shade_api
+    clean-disabled: true
+  sql:
+    init:
+      mode: never
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
